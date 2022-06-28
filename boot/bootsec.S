@@ -37,8 +37,7 @@ _boot.a20_fail:
 _boot.a20_ok:
 _boot.ld_stage1:
 
-end:
-	jmp $$
+	jmp $
 
 %include "bootsec.a20.S"
 %include "bootsec.drive.S"

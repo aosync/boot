@@ -1,10 +1,10 @@
 bootas = as.process(
     'bootsec.S',
+    'stage1.S',
 	extra_args : ['-i', meson.current_source_dir()]
 )
 
 bootelfsrc = [
-    'stage1.c',
     bootas
 ]
 

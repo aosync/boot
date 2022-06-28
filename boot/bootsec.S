@@ -1,9 +1,15 @@
-	[bits 16]
+[bits 16]
 
-	extern stack_top
+; Linker definitions
+extern _stack_top
+extern _boot_stage1
+extern _boot_end
 
-	section .boot.bootsec
-	global _boot
+; stage1
+extern _stage1
+
+section .boot.bootsec
+global _boot
 _boot:
 	xor ax, ax
 	mov ds, ax
@@ -12,10 +18,12 @@ _boot:
 	mov gs, ax
 	mov fs, ax
 
-	mov esp, stack_top
+	; Initialize the stack
+	mov esp, _stack_top
 
 	call drive_init
 
+	; Attempt to enable the A20 line
 	call a20_enable_bios
 	call a20_check
 	cmp ax, 1
@@ -32,21 +40,34 @@ _boot:
 	je _boot.a20_ok
 
 _boot.a20_fail:
-	hlt
+	mov esi, str.a20_error
+	call fatal
 
 _boot.a20_ok:
 _boot.ld_stage1:
+	mov edi, dword [mbr.entry0.lb]
+	mov esi, _boot_stage1
+_boot.ld_stage1.loop0b:
+	cmp esi, _boot_end
+	jge _boot.ld_stage1.loop0e
 
-	jmp $
+	call drive_read
+
+	inc edi
+	add esi, 0x200
+
+	jmp _boot.ld_stage1.loop0b
+_boot.ld_stage1.loop0e:
+	jmp _stage1
 
 %include "bootsec.a20.S"
 %include "bootsec.drive.S"
+%include "bootsec.log.S"
 %include "bootsec.info.S"
 
 %if ($ - $$) > 446
 	%fatal "Bootstrap code is too large"
 %endif
-
 
 times 446 - ($ - $$) db 0
 mbr.entry0:

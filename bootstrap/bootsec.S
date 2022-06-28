@@ -21,6 +21,8 @@ _boot:
 	; Initialize the stack
 	mov esp, _stack_top
 
+	sidt [info.bioslidtr]
+
 	call drive_init
 
 	; Attempt to enable the A20 line

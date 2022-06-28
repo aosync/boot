@@ -24,6 +24,7 @@ subdir('bootstrap')
 # Boot sources
 boot_src = [
     'boot.c',
+    'pmem.c',
     bootstrap_as
 ]
 

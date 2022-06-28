@@ -42,4 +42,6 @@ SECTIONS {
 	} :data
 
 	_boot_end = .;
+
+	primitives_stack = .;
 }

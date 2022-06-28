@@ -1,5 +1,5 @@
 int
-_stage0()
+cmain()
 {
 	return 0;
 }

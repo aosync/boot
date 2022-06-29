@@ -3,6 +3,7 @@
 #include <bios/call.h>
 #include <bios/linker.h>
 #include <str/str.h>
+#include <man.h>
 
 int main() {
 	short *fb = (short*)0xb8000;
@@ -10,11 +11,7 @@ int main() {
 	for (int i = 0; i < 80*25; i++)
 		fb[i] = 0;
 
-
-	char *s = "hello";
-	int len = strlen(s);
-	for (int i = 0; i < len; i++)
-		fb[i] = s[i] | 0xA << 8;
+	memmove(fb, &main, 80*25*2);
 
 	return 0;
 }

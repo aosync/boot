@@ -1,5 +1,5 @@
-#ifndef MEM_H
-#define MEM_H
+#ifndef MEM_MEM_H
+#define MEM_MEM_H
 
 #include "allocator.h"
 

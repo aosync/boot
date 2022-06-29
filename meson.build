@@ -27,7 +27,7 @@ boot_inc = [include_directories('.')]
 boot_link_dep = [linker_sc]
 
 # Modules
-subdir('bootstrap')
+subdir('bios')
 subdir('stddef')
 subdir('mem')
 

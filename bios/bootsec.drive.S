@@ -1,7 +1,7 @@
 ; Initializes the bootdrive struct
 drive_init:
 	; Store the boot drive number
-	mov byte [info.bootdrive.no], dl
+	mov byte [bios_info.bootdrive.no], dl
 
 	; Gather disk info
 	mov ah, 0x8
@@ -10,11 +10,11 @@ drive_init:
 	; Store the number of heads
 	; (the BIOS function returns the index of the last head)
 	inc dh
-	mov byte [info.bootdrive.heads], dh
+	mov byte [bios_info.bootdrive.heads], dh
 
 	; Store the number of sectors per track
 	and cl, 0x3f
-	mov byte [info.bootdrive.spt], cl
+	mov byte [bios_info.bootdrive.spt], cl
 
 	ret
 
@@ -43,14 +43,14 @@ drive_read:
 	call drive_addrconv
 
 	mov ax, di
-	mov cl, byte [info.bootdrive.spt]
+	mov cl, byte [bios_info.bootdrive.spt]
 	div cl
 
 	mov cl, ah
 	inc cl 		; Sector
 
 	xor ah, ah
-	mov dl, byte [info.bootdrive.heads]
+	mov dl, byte [bios_info.bootdrive.heads]
 	div dl
 
 	mov dh, ah	; Head
@@ -58,7 +58,7 @@ drive_read:
 
 	mov ah, 0x2
 	mov al, 1
-	mov dl, byte [info.bootdrive.no]
+	mov dl, byte [bios_info.bootdrive.no]
 	int 0x13
 
 	pop esi

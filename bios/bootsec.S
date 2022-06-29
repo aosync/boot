@@ -17,11 +17,12 @@ _boot:
 	mov ss, ax
 	mov gs, ax
 	mov fs, ax
+	; hlt
 
 	; Initialize the stack
 	mov esp, _stack_top
 
-	sidt [info.bioslidtr]
+	sidt [bios_info.bioslidtr]
 
 	call drive_init
 

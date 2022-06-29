@@ -1,4 +1,4 @@
-The [bootstrap] module contains the assembly code
+The [bios] module contains the assembly code
 necessary to boot using BIOS. This code is linked
 at the beginning of the resulting disk file.
 

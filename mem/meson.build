@@ -1,8 +1,8 @@
 mem_src = [
-	'test.c'
+	'allocator.c',
+	'mem.c'
 ]
 
-mem_inc = include_directories('.')
-mem = static_library('mem', mem_src, include_directories: mem_inc)
+mem = static_library('mem', mem_src, include_directories: boot_inc)
 
 boot_mod += mem

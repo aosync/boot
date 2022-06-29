@@ -1,4 +1,4 @@
-extern info.bioslidtr
+extern bios_info.bioslidtr
 
 global bios_regs
 bios_regs:
@@ -75,7 +75,7 @@ bios_call.realdown:
 	mov gs, ax
 	mov fs, ax
 
-	lidt [info.bioslidtr]
+	lidt [bios_info.bioslidtr]
 
 	; Modify the interrupt number
 	pop ax

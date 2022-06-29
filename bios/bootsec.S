@@ -1,9 +1,9 @@
 [bits 16]
 
 ; Linker definitions
-extern _stack_top
-extern _boot_stage1
-extern _boot_end
+extern bios_stack_top
+extern bios_boot_stage1
+extern bios_boot_end
 
 ; stage1
 extern _stage1
@@ -20,7 +20,7 @@ _boot:
 	; hlt
 
 	; Initialize the stack
-	mov esp, _stack_top
+	mov esp, bios_stack_top
 
 	sidt [bios_info.bioslidtr]
 
@@ -49,9 +49,9 @@ _boot.a20_fail:
 _boot.a20_ok:
 _boot.ld_stage1:
 	mov edi, dword [mbr.entry0.lb]
-	mov esi, _boot_stage1
+	mov esi, bios_boot_stage1
 _boot.ld_stage1.loop0b:
-	cmp esi, _boot_end
+	cmp esi, bios_boot_end
 	jge _boot.ld_stage1.loop0e
 
 	call drive_read

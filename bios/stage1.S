@@ -2,10 +2,10 @@
 [bits 16]
 
 ; Pages
-extern _p4
-extern _p3
-extern _p2
-extern _p1
+extern bios_p4
+extern bios_p3
+extern bios_p2
+extern bios_p1
 
 ; C main function
 extern main
@@ -34,31 +34,31 @@ _stage1.pm:
 	mov fs, ax
 
 _stage1.pages_clear:
-	mov edi, _p4
+	mov edi, bios_p4
 	call page_clear
-	mov edi, _p3
+	mov edi, bios_p3
 	call page_clear
-	mov edi, _p2
+	mov edi, bios_p2
 	call page_clear
-	mov edi, _p1
+	mov edi, bios_p1
 	call page_clear
 
 _stage1.pages_init:
-	mov edi, _p3
+	mov edi, bios_p3
 	or edi, 3
-	mov [_p4], edi
+	mov [bios_p4], edi
 
-	mov edi, _p2
+	mov edi, bios_p2
 	or edi, 3
-	mov [_p3], edi
+	mov [bios_p3], edi
 
-	mov edi, _p1
+	mov edi, bios_p1
 	or edi, 3
-	mov [_p3 + 8], edi
+	mov [bios_p3 + 8], edi
 
 	mov ebx, 1 << 7 | 0x3
 	mov ecx, 512
-	mov edi, _p2
+	mov edi, bios_p2
 _stage1.p2_loop:
 	mov [edi], ebx
 	add ebx, 0x200000
@@ -66,7 +66,7 @@ _stage1.p2_loop:
 	loop _stage1.p2_loop
 
 	mov ecx, 512
-	mov edi, _p1
+	mov edi, bios_p1
 _stage1.p1_loop:
 	mov [edi], ebx
 	add ebx, 0x200000
@@ -74,7 +74,7 @@ _stage1.p1_loop:
 	loop _stage1.p1_loop
 
 	; Load the p4 into cr3
-	mov edi, _p4
+	mov edi, bios_p4
 	mov cr3, edi
 
 _stage1.pae_enable:
@@ -106,11 +106,6 @@ _stage1.lm:
 	mov fs, ax
 
 	call main
-
-	; mov dword [bios_regs.eax], 0xE << 8 | 'H'
-	; mov dword [bios_regs.ebx], 0 << 8 | 0xD
-	; mov edi, 0x10
-	; call bios_call
 
 	jmp $
 

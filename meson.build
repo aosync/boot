@@ -14,17 +14,14 @@ as      = generator(
                  '@EXTRA_ARGS@']
 )
 
-# Linker script
-linker_sc = meson.project_source_root() / 'linker.ld'
-
 # Boot sources
 boot_src = [
-    'boot.c',
-    'pmem.c'
+    'boot.c'
 ]
 boot_mod = []
 boot_inc = [include_directories('.')]
-boot_link_dep = [linker_sc]
+boot_link_arg = []
+boot_link_dep = []
 
 # Modules
 subdir('bios')
@@ -32,7 +29,7 @@ subdir('stddef')
 subdir('mem')
 
 # Create the elf
-boot = executable('boot', boot_src, link_with: boot_mod, include_directories: boot_inc, link_args: ['-T' + linker_sc], link_depends: boot_link_dep)
+boot = executable('boot', boot_src, link_with: boot_mod, include_directories: boot_inc, link_args: boot_link_arg, link_depends: boot_link_dep)
 
 # Create the flat binary
 boot_bin = custom_target('boot.bin',

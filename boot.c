@@ -1,6 +1,7 @@
 #include <mem/mem.h>
 #include <bios/info.h>
 #include <bios/call.h>
+#include <bios/linker.h>
 
 int main() {
 	short *fb = (short*)0xb8000;

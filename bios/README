@@ -4,4 +4,5 @@ at the beginning of the resulting disk file.
 
 This module also defines the bios_call function with
 the purpose of being able to call BIOS services from
-long mode.
+long mode, as well as various boot time constants such
+as defined by the linker.

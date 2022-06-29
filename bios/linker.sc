@@ -6,25 +6,25 @@ SECTIONS {
 
 	. = 0x500;
 	. = ALIGN(4096);
-	_p4 = .;
+	bios_p4 = .;
 	. += 4096;
-	_p3 = .;
+	bios_p3 = .;
 	. += 4096;
-	_p2 = .;
+	bios_p2 = .;
 	. += 4096;
-	_p1 = .;
+	bios_p1 = .;
 	. += 4096;
-	_workspace = .;
+	bios_lower_workspace = .;
 
 	. = 0x7c00;
 	
-	_stack_top = .;
+	bios_stack_top = .;
 
 	.boot : {
 		KEEP (*(.boot.bootsec))
 		*(.boot.bootsec)
 
-		_boot_stage1 = .;
+		bios_boot_stage1 = .;
 		KEEP (*(.boot.stage1))
 		*(.boot.stage1)
 	}
@@ -41,7 +41,7 @@ SECTIONS {
 	      *(.bss.*)
 	} :data
 
-	_boot_end = .;
+	bios_boot_end = .;
 
-	primitives_stack = .;
+	bios_upper_workspace = .;
 }

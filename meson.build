@@ -27,6 +27,7 @@ boot_link_dep = []
 subdir('bios')
 subdir('stddef')
 subdir('mem')
+subdir('str')
 
 # Create the elf
 boot = executable('boot', boot_src, link_with: boot_mod, include_directories: boot_inc, link_args: boot_link_arg, link_depends: boot_link_dep)

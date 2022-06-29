@@ -1,0 +1,7 @@
+The [bootstrap] module contains the assembly code
+necessary to boot using BIOS. This code is linked
+at the beginning of the resulting disk file.
+
+This module also defines the bios_call function with
+the purpose of being able to call BIOS services from
+long mode.

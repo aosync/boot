@@ -22,11 +22,11 @@ SECTIONS {
 
 	.boot : {
 		KEEP (*(.boot.bootsec))
-		*(boot.bootsec)
+		*(.boot.bootsec)
 
 		_boot_stage1 = .;
 		KEEP (*(.boot.stage1))
-		*(koot.stage1)
+		*(.boot.stage1)
 	}
 	.text : {
 	      KEEP (*(.text))

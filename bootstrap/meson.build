@@ -4,3 +4,7 @@ bootstrap_as = as.process(
     'stage1.S',
 	extra_args : ['-i', meson.current_source_dir()]
 )
+
+bootstrap = static_library('bootstrap', bootstrap_as)
+
+boot_mod += bootstrap

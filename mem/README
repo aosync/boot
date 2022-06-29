@@ -1,0 +1,6 @@
+The [mem] module defines interfaces and stub
+implementations of facilities needed for memory
+allocation.
+
+The module also holds singleton allocators and
+functions to use them for convenience purposes.

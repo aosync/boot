@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 
 extern void *const primitives_stack;
 

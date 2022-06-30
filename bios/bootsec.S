@@ -17,10 +17,6 @@ _boot:
 	mov ss, ax
 	mov gs, ax
 	mov fs, ax
-	; hlt
-
-	mov ax, word [0x413]
-	mov word [bios_info.what], ax
 
 	; Initialize the stack
 	mov esp, bios_stack_top

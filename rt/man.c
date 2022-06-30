@@ -28,3 +28,12 @@ void *memmove(void *dst, void *src, size_t n) {
 
 	return dst;
 }
+
+void *memset(void *s, int c, size_t n) {
+	u8 *cs = s;
+
+	for (size_t i = 0; i < n; i++)
+		s[i] = (u8)c;
+
+	return s;
+}

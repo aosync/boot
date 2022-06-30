@@ -5,7 +5,12 @@ bios_as = as.process(
 	extra_args : ['-i', meson.current_source_dir()]
 )
 
-bios = static_library('bios', bios_as)
+bios_src = [
+    'quirks.c',
+    bios_as
+]
+
+bios = static_library('bios', bios_src, include_directories: boot_inc)
 
 boot_mod += bios
 

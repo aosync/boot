@@ -24,8 +24,9 @@ boot_link_arg = []
 boot_link_dep = []
 
 # Modules
-subdir('bios')
 subdir('rt')
+subdir('bios')
+subdir('biosdrv')
 subdir('mem')
 subdir('str')
 

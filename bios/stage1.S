@@ -8,7 +8,7 @@ extern bios_p2
 extern bios_p1
 
 ; C main function
-extern main
+extern bios_quirks
 
 %include "stage1.gdt.S"
 ; %include "stage1.bioscall.S"
@@ -105,7 +105,7 @@ _stage1.lm:
 	mov gs, ax
 	mov fs, ax
 
-	call main
+	call bios_quirks
 
 	jmp $
 

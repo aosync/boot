@@ -1,6 +1,7 @@
 mem_src = [
 	'allocator.c',
-	'mem.c'
+	'mem.c',
+	'framer.c'
 ]
 
 mem = static_library('mem', mem_src, include_directories: boot_inc)

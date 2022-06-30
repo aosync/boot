@@ -11,6 +11,7 @@ extern struct {
 	u32 edi;
 	u32 esi;
 	u16 es;
+	u8 cf;
 }__attribute__((packed)) bios_regs;
 
 void bios_call(u8 int_no);

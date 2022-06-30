@@ -8,7 +8,8 @@ bios_regs.ecx: dd 0
 bios_regs.edx: dd 0
 bios_regs.edi: dd 0
 bios_regs.esi: dd 0
-bios_regs.es:  dd 0
+bios_regs.es:  dw 0
+bios_regs.cf:  db 0
 
 bios_call.prev_idtr:
 	dq 0
@@ -89,6 +90,7 @@ bios_call.realdown:
 	mov edi, dword [bios_regs.edi]
 	mov esi, dword [bios_regs.esi]
 	mov es, word [bios_regs.es]
+	mov byte [bios_regs.cf], 0
 
 	sti
 
@@ -97,6 +99,9 @@ bios_call.int:
 
 	cli
 
+	jnc bios_call.carry_set
+	mov byte [bios_regs.cf], 1
+bios_call.carry_set:
 	mov word [bios_regs.es], es
 	mov dword [bios_regs.esi], esi
 	mov dword [bios_regs.edi], edi

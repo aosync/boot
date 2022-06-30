@@ -33,7 +33,7 @@ void *memset(void *s, int c, size_t n) {
 	u8 *cs = s;
 
 	for (size_t i = 0; i < n; i++)
-		s[i] = (u8)c;
+		cs[i] = (u8)c;
 
 	return s;
 }

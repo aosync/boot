@@ -1,6 +1,0 @@
-The [std] module contains headers defining
-basic types and macros available for include
-at the top level.
-
-[std] also defines memory manipulation functions
-such as memcpy and memmove

@@ -27,6 +27,9 @@ static char convchars[] = {
 void str_u64tos(char *dst, u64 i, u8 base) {
 	size_t idx = 0;
 
+	if (i == 0)
+		dst[idx++] = '0';
+
 	while (i) {
 		dst[idx] = convchars[i % base];
 		i /= base;

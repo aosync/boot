@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 void str_u64tos(char *dst, u64 i, u8 base);
 void str_u64todec(char *dst, u64 i);
 

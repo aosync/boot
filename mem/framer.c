@@ -6,6 +6,10 @@
 #define ALIGNDOWN(X, B) (void*)((size_t)(X) - ((size_t)(X) % (B)))
 
 MemFramer *mem_framer_install(void *ptr, void *end, size_t blksz) {
+	// Check if there is enough room for a framer in the region
+	if (end - ptr < sizeof(MemFramer))
+		return nil;
+
 	void *blk = ptr + sizeof(MemFramer);
 
 	if ((size_t)blk % blksz)
@@ -56,4 +60,11 @@ void mem_framer_free(MemFramer *self, void *blk) {
 	MemFramerFblk *fblk = blk;
 	fblk->next = self->fblk;
 	self->fblk = fblk;
+}
+
+void mem_framer_append(MemFramer *self, MemFramer *other) {
+	MemFramer *cur = self;
+	while (cur->next)
+		cur = cur->next;
+	cur->next = other;
 }

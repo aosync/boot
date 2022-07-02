@@ -21,5 +21,6 @@ typedef struct mem_framer MemFramer;
 MemFramer *mem_framer_install(void *ptr, void *end, size_t blksz);
 void *mem_framer_alloc(MemFramer *self, size_t n);
 void mem_framer_free(MemFramer *self, void *blk);
+void mem_framer_append(MemFramer *self, MemFramer *other);
 
 #endif

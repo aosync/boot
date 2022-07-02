@@ -48,8 +48,8 @@ typedef struct mem_mmap_blk MemMmapBlk;
 static_assert(sizeof(MemMmapBlk) == 4096, "MemMmapBlk is not 4096 bytes long.");
 
 MemMmapBlk *mem_mmap_install(void *ptr, MemFramer *framer);
-MemMmapEntry *mem_mmap_alloc(MemMmapBlk *blk);
-void mem_mmap_free(MemMmapBlk *blk, MemMmapEntry *entry);
+MemMmapEntry *mem_mmap_alloc_entry(MemMmapBlk *blk);
+void mem_mmap_free_entry(MemMmapBlk *blk, MemMmapEntry *entry);
 u64 mem_mmap_find_location(MemMmapBlk *blk, u64 begin);
 char mem_mmap_fix_overlap(MemMmapBlk *blk);
 char mem_mmap_fix_length(MemMmapBlk *blk);

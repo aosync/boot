@@ -15,7 +15,7 @@ MemMmapBlk *mem_mmap_install(void *ptr, MemFramer *framer) {
 }
 
 // Allocates a new entry
-MemMmapEntry *mem_mmap_alloc(MemMmapBlk *blk) {
+MemMmapEntry *mem_mmap_alloc_entry(MemMmapBlk *blk) {
 	// Try to find a free entry in the current mmap block
 	for (size_t i = 0; i < 127; i++)
 		if (blk->entries[i].type == 0)
@@ -24,7 +24,7 @@ MemMmapEntry *mem_mmap_alloc(MemMmapBlk *blk) {
 	// If not, ask the next mmap block for a free entry
 	MemMmapBlk *nextblk = (MemMmapBlk*)blk->nextblk;
 	if (nextblk)
-		return mem_mmap_alloc(nextblk);
+		return mem_mmap_alloc_entry(nextblk);
 	else {
 		// If no mmap block, allocate a new one
 		void *frame = mem_framer_alloc(blk->framer, 1);
@@ -39,13 +39,13 @@ MemMmapEntry *mem_mmap_alloc(MemMmapBlk *blk) {
 		blk->nextblk = (u64)nextblk;
 
 		// Ask mmap block for a free entry
-		return mem_mmap_alloc(nextblk);
+		return mem_mmap_alloc_entry(nextblk);
 	}
 }
 
 // Frees a mmap entry and frees the associated page if the mmap block
 // is empty
-void mem_mmap_free(MemMmapBlk *blk, MemMmapEntry *entry) {
+void mem_mmap_free_entry(MemMmapBlk *blk, MemMmapEntry *entry) {
 	// Mark the entry as free
 	entry->type = MEM_MMAP_FREE;
 
@@ -119,11 +119,11 @@ char mem_mmap_fix_overlap(MemMmapBlk *blk) {
 	if (entry->type >= next->type) {
 		entry->next = next->next;
 
-		mem_mmap_free(blk, next);
+		mem_mmap_free_entry(blk, next);
 		return 1;
 	}
 
-	MemMmapEntry *contd = mem_mmap_alloc(blk);
+	MemMmapEntry *contd = mem_mmap_alloc_entry(blk);
 	memcpy(contd, entry, sizeof(MemMmapEntry));
 	entry->end = next->begin;
 	contd->begin = next->end;
@@ -185,7 +185,7 @@ char mem_mmap_collate(MemMmapBlk *blk) {
 	entry->end = next->end;
 	entry->next = next->next;
 
-	mem_mmap_free(blk, next);
+	mem_mmap_free_entry(blk, next);
 
 	return 1;
 }
@@ -197,7 +197,7 @@ char mem_mmap_collect_zero(MemMmapBlk *blk) {
 	MemMmapEntry *entry = (MemMmapEntry*)blk->first;
 	if (entry->begin == entry->end || entry->type == MEM_MMAP_UNMARK) {
 		blk->first = entry->next;
-		mem_mmap_free(blk, entry);
+		mem_mmap_free_entry(blk, entry);
 		return 1;
 	}
 
@@ -214,13 +214,13 @@ char mem_mmap_collect_zero(MemMmapBlk *blk) {
 		return 0;
 
 	entry->next = next->next;
-	mem_mmap_free(blk, next);
+	mem_mmap_free_entry(blk, next);
 	return 1;
 }
 
 void mem_mmap_mark(MemMmapBlk *blk, u64 begin, u64 end, u32 type, u32 data) {
 	// Allocate a new entry
-	MemMmapEntry *entry = mem_mmap_alloc(blk);
+	MemMmapEntry *entry = mem_mmap_alloc_entry(blk);
 
 	// Place it at its according location in the linked list
 	u64 location = mem_mmap_find_location(blk, begin);
@@ -239,7 +239,7 @@ void mem_mmap_mark(MemMmapBlk *blk, u64 begin, u64 end, u32 type, u32 data) {
 	entry->data = data;
 
 
-	// Put entry
+	// Iteratively clean the map
 	while (mem_mmap_fix_overlap(blk));
 	while (mem_mmap_fix_length(blk));
 	while (mem_mmap_collate(blk));

@@ -1,0 +1,2 @@
+The [fmt] module implements various formatting functions
+such as fprintf and printf.

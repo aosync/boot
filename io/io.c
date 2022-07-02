@@ -2,6 +2,8 @@
 
 #include <stddef.h>
 
+IoFile *io_stdout = nil;
+
 ssize_t io_write(IoFile *file, void *buf, size_t n) {
 	if (file->write == nil)
 		return 0;

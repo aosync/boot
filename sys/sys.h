@@ -14,6 +14,7 @@ struct sys_sys {
 	MemMmapBlk *mmap;
 
 	IoFile *disk;
+	IoFile *cons;
 };
 typedef struct sys_sys Sys;
 

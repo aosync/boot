@@ -8,6 +8,8 @@
 #include <mem/mmap.h>
 #include <str/conv.h>
 #include <sys/sys.h>
+#include <text/text.h>
+#include <io/io.h>
 
 #define BIOS_LIMIT ((void*)0x80000000)
 #define BIOS_EBDA (*((volatile u16*)0x413) * 1024)
@@ -53,6 +55,9 @@ void bios_quirks() {
 	for (entry = (MemMmapEntry*)blk->first; entry; entry = (MemMmapEntry*)entry->next) {
 		if (entry->type != MEM_MMAP_USABLE)
 			continue;
+
+		if (entry->begin >= (u64)BIOS_LIMIT)
+			continue;
 		
 		void *end = (void*)entry->end;
 		if (end >= BIOS_LIMIT)
@@ -68,44 +73,26 @@ void bios_quirks() {
 			bulk = tmp;
 	}
 
-	// Debug the entries
-	short *fb = (short*)0xb8000;
-
-	for (int i = 0; i < 80*25; i++)
-		fb[i] = 0;
-
-	entry = (MemMmapEntry*)blk->first;
-	while (entry) {
-
-		int i, j;
-
-		char tmp[100];
-		str_u64tos(tmp, entry->begin, 16);
-		for (i = 0, j = 0; tmp[j]; i++, j++)
-			fb[off + i] = tmp[j] | 0xA << 8;
-		i++;
-		str_u64tos(tmp, entry->end, 16);
-		for (j = 0; tmp[j]; i++, j++)
-			fb[off + i] = tmp[j] | 0xA << 8;
-		i++;
-		str_u64tos(tmp, entry->type, 10);
-		for (j = 0; tmp[j]; i++, j++)
-			fb[off + i] = tmp[j] | 0xA << 8;
-		i++;
-
-		off += 80;
-		entry = (MemMmapEntry*)entry->next;
-	}
-
 	IoFile disk = (IoFile) {
 		.read = biosdrv_disk_read
 	};
+
+	Text text;
+	text_init(&text, (void*)0xB8000, 80, 25);
+	text_clear(&text);
+	IoFile cons = (IoFile) {
+		.inner = &text,
+		.write = text_write
+	};
+
+	io_stdout = &cons;
 
 	Sys sys = (Sys) {
 		.prim = prim,
 		.bulk = bulk,
 		.mmap = blk,
-		.disk = &disk
+		.disk = &disk,
+		.cons = &cons,
 	};
 
 	boot(&sys);

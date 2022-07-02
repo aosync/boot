@@ -27,10 +27,12 @@ boot_link_dep = []
 subdir('rt')
 subdir('bios')
 subdir('biosdrv')
+subdir('fmt')
 subdir('io')
 subdir('mem')
 subdir('str')
 subdir('sys')
+subdir('text')
 
 # Create the elf
 boot = executable('boot', boot_src, link_with: boot_mod, include_directories: boot_inc, link_args: boot_link_arg, link_depends: boot_link_dep)

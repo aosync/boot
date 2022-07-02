@@ -36,7 +36,7 @@ char *mmap_entry_type_name(u32 type) {
 int boot(Sys *sys) {
 	MemMmapEntry *entry = (MemMmapEntry*)sys->mmap->first;
 	while (entry) {
-		printf("%011#x %011#x %s\n", (u64)entry->begin, (u64)entry->end, mmap_entry_type_name(entry->type));
+		printf("%09p %09p %s\n", (u64)entry->begin, (u64)entry->end, mmap_entry_type_name(entry->type));
 
 		entry = (MemMmapEntry*)entry->next;
 	}

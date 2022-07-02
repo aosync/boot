@@ -11,23 +11,24 @@ static void padder(char *s, int padding) {
 	int dis = padding - len;
 	if (dis < 0)
 		return;
-	memmove(s + dis, s, len);
+	memmove(s + dis, s, len + 1);
 	memset(s, '0', dis);
 }
 
 int _fprintf(IoFile *file, char *fmt, va_list ap) {
 	char *begin = fmt, *end = fmt;
 
-	char escaped = 0;
-	char longcount = 0;
-	int padcount = 0;
 	int count = 0;
+
+	char escaped = 0;
+	char longmode = 0;
+	int padding = 0;
 	
-	char c;
+	// Variables used in the switch statement
 	char num[64];
-	char *s;
+	char c;
+	char *str;
 	int len;
-	void *ptr;
 
 	for (; *end; end++) {
 		if (!escaped && *end == '%') {
@@ -42,31 +43,34 @@ int _fprintf(IoFile *file, char *fmt, va_list ap) {
 
 		switch (*end) {
 		case 'l':
-			longcount = 1;
+			longmode = 1;
 			continue;
 		case '0':
-			padcount = -1;
+			padding = -1;
+			continue;
+		case '#':
+			count += io_write(file, "0x", 2);
 			continue;
 		case 'c':
 			c = va_arg(ap, int);
 			count += io_write(file, &c, 1);
 			break;
 		case 's':
-			s = va_arg(ap, char*);
-			len = strlen(s);
-			count += io_write(file, s, len);
+			str = va_arg(ap, char*);
+			len = strlen(str);
+			count += io_write(file, str, len);
 			break;
-		case '#':
-			count += io_write(file, "0x", 2);
-			continue;
 		case 'p':
+			longmode = 1;
 			count += io_write(file, "0x", 2);
 			/* FALLTHROUGH */
 		case 'x':
-			ptr = va_arg(ap, void*);
-			str_u64tos(num, (size_t)ptr, 16);
+			if (longmode)
+				str_u64tos(num, va_arg(ap, u64), 16);
+			else
+				str_u64tos(num, va_arg(ap, u32), 16);
 
-			padder(num, padcount);
+			padder(num, padding);
 
 			len = strlen(num);
 			count += io_write(file, num, len);
@@ -74,7 +78,7 @@ int _fprintf(IoFile *file, char *fmt, va_list ap) {
 		case 'd':
 			/* FALLTHROUGH */
 		case 'u':
-			switch (longcount) {
+			switch (longmode) {
 			case 0:
 				str_u64todec(num, va_arg(ap, u32));
 				break;
@@ -82,28 +86,28 @@ int _fprintf(IoFile *file, char *fmt, va_list ap) {
 				str_u64todec(num, va_arg(ap, u64));
 			}
 
-			padder(num, padcount);
+			padder(num, padding);
 
 			len = strlen(num);
 			count += io_write(file, num, len);
 			break;
 		default:
-			if (padcount == -1) {
-				padcount = 0;
+			if (padding == -1) {
+				padding = 0;
 
 				char *b = end;
 				for (; *end && *end >= '0' && *end <= '9'; end++);
 				char *e = --end;
 				for (size_t factor = 1; end >= b; factor *= 10, end--)
-					padcount += (*end - '0') * factor;
+					padding += (*end - '0') * factor;
 				end = e;
 				continue;
 			}
 		}
 
 		begin = end + 1;
-		longcount = 0;
-		padcount = 0;
+		longmode = 0;
+		padding = 0;
 		escaped = 0;
 	}
 

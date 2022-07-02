@@ -1,0 +1,2 @@
+The [io] module adds an abstraction for various
+ways to perform I/O via files.

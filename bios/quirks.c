@@ -2,6 +2,7 @@
 #include "linker.h"
 #include "info.h"
 
+#include <biosdrv/disk.h>
 #include <biosdrv/mmap.h>
 #include <mem/framer.h>
 #include <mem/mmap.h>
@@ -96,10 +97,15 @@ void bios_quirks() {
 		entry = (MemMmapEntry*)entry->next;
 	}
 
+	IoFile disk = (IoFile) {
+		.read = biosdrv_disk_read
+	};
+
 	Sys sys = (Sys) {
 		.prim = prim,
 		.bulk = bulk,
-		.mmap = blk
+		.mmap = blk,
+		.disk = &disk
 	};
 
 	boot(&sys);

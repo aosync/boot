@@ -27,6 +27,7 @@ boot_link_dep = []
 subdir('rt')
 subdir('bios')
 subdir('biosdrv')
+subdir('io')
 subdir('mem')
 subdir('str')
 subdir('sys')

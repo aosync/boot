@@ -1,6 +1,7 @@
 #ifndef SYS_SYS_H
 #define SYS_SYS_H
 
+#include <io/file.h>
 #include <mem/framer.h>
 #include <mem/mmap.h>
 
@@ -11,6 +12,8 @@ struct sys_sys {
 	MemFramer *bulk;
 
 	MemMmapBlk *mmap;
+
+	IoFile *disk;
 };
 typedef struct sys_sys Sys;
 

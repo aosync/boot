@@ -36,6 +36,10 @@ static_assert(sizeof(u64) == 8, "u64 is not 64-bits");
 static_assert(sizeof(i64) == 8, "i64 is not 64-bits");
 
 typedef unsigned long long int size_t;
+typedef long long int ssize_t;
 static_assert(sizeof(size_t) == 8, "size_t is not 64-bits");
+static_assert(sizeof(ssize_t) == 8, "ssize_t is not 64-bits");
+
+typedef size_t off_t;
 
 #endif

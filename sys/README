@@ -1,0 +1,2 @@
+The [sys] module defines a structure that abstracts the facilities
+and drivers used to interface with the early boot environment.

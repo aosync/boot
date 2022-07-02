@@ -6,11 +6,12 @@
 #include <mem/framer.h>
 #include <mem/mmap.h>
 #include <str/conv.h>
+#include <sys/sys.h>
 
 #define BIOS_LIMIT ((void*)0x80000000)
 #define BIOS_EBDA (*((volatile u16*)0x413) * 1024)
 
-int main();
+int boot(Sys *sys);
 
 int off = 0;
 
@@ -95,30 +96,11 @@ void bios_quirks() {
 		entry = (MemMmapEntry*)entry->next;
 	}
 
-	/*int a = 1;
-	biosdrv_mmap_init();
+	Sys sys = (Sys) {
+		.prim = prim,
+		.bulk = bulk,
+		.mmap = blk
+	};
 
-	while (biosdrv_mmap_avail()) {
-		biosdrv_mmap_cont();
-		a++;
-	}
-
-	*/
-
-	/*int i, j;
-
-	char tmp[100];
-	str_u64tos(tmp, entry->base, 16);
-	for (i = 0, j = 0; tmp[j]; i++, j++)
-		fb[i] = tmp[j] | 0xA << 8;
-	i++;
-	str_u64tos(tmp, entry->base + entry->length, 16);
-	for (j = 0; tmp[j]; i++, j++)
-		fb[i] = tmp[j] | 0xA << 8;
-	i++;
-	str_u64tos(tmp, entry->type, 16);
-	for (j = 0; tmp[j]; i++, j++)
-		fb[i] = tmp[j] | 0xA << 8;
-	i++;
-	*/
+	boot(&sys);
 }

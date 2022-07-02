@@ -1,15 +1,5 @@
-#include <mem/mem.h>
-#include <bios/info.h>
-#include <bios/call.h>
-#include <bios/linker.h>
-#include <str/str.h>
-#include <str/conv.h>
-#include <man.h>
+#include <sys/sys.h>
 
-#include <mem/framer.h>
-
-#include <mem/mmap.h>
-
-int main() {
+int boot(Sys *sys) {
 	return 0;
 }

@@ -109,6 +109,7 @@ _stage1.lm:
 
 	jmp $
 
+[bits 32]
 ; Clears a page
 page_clear:
 	mov ecx, 0

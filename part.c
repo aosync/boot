@@ -13,7 +13,7 @@ int find_boot_part(PartFile *file) {
 
 	for (int i = 0; i < 4; i++)
 		if (mbr.entries[i].attributes & 1) {
-			part_file_init(file, sys->disk, mbr.entries[i].lbegin, mbr.entries[i].lbegin + mbr.entries[i].length);
+			part_file_init(file, sys->disk, mbr.entries[i].lbegin * 512, (mbr.entries[i].lbegin + mbr.entries[i].length) * 512);
 			return 1;
 		}
 

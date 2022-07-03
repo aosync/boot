@@ -16,7 +16,8 @@ as      = generator(
 
 # Boot sources
 boot_src = [
-    'boot.c'
+    'boot.c',
+    'part.c'
 ]
 boot_mod = []
 boot_inc = [include_directories('.')]
@@ -30,6 +31,7 @@ subdir('biosdrv')
 subdir('fmt')
 subdir('io')
 subdir('mem')
+subdir('part')
 subdir('str')
 subdir('sys')
 subdir('text')

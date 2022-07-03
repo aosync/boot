@@ -18,4 +18,6 @@ struct sys_sys {
 };
 typedef struct sys_sys Sys;
 
+extern Sys *sys;
+
 #endif

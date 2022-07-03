@@ -5,6 +5,9 @@
 #include <mem/mmap.h>
 #include <fmt/fmt.h>
 #include <text/text.h>
+#include <part/mbr.h>
+
+#include "part.h"
 
 char *mmap_entry_type_name(u32 type) {
 	switch (type) {
@@ -33,7 +36,7 @@ char *mmap_entry_type_name(u32 type) {
 	}
 }
 
-int boot(Sys *sys) {
+int boot() {
 	MemMmapEntry *entry = (MemMmapEntry*)sys->mmap->first;
 	while (entry) {
 		printf("%09p %09p %s\n", (u64)entry->begin, (u64)entry->end, mmap_entry_type_name(entry->type));
@@ -41,6 +44,13 @@ int boot(Sys *sys) {
 		entry = (MemMmapEntry*)entry->next;
 	}
 
+	PartFile pf;
+	IoFile *part = (IoFile*)&pf;
+
+	if (!find_boot_part(&pf)) {
+		printf("No bootable partition found.");
+		return 1;
+	}
 
 	return 0;
 }

@@ -14,9 +14,7 @@
 #define BIOS_LIMIT ((void*)0x80000000)
 #define BIOS_EBDA (*((volatile u16*)0x413) * 1024)
 
-int boot(Sys *sys);
-
-int off = 0;
+int boot();
 
 // Performs the early initialization quirks 
 void bios_quirks() {
@@ -87,7 +85,7 @@ void bios_quirks() {
 
 	io_stdout = &cons;
 
-	Sys sys = (Sys) {
+	Sys s = (Sys) {
 		.prim = prim,
 		.bulk = bulk,
 		.mmap = blk,
@@ -95,5 +93,7 @@ void bios_quirks() {
 		.cons = &cons,
 	};
 
-	boot(&sys);
+	sys = &s;
+
+	boot(sys);
 }

@@ -1,3 +1,4 @@
+#include "biosdrv.h"
 #include "mmap.h"
 
 #include <bios/linker.h>
@@ -11,7 +12,9 @@ BiosDrvMmapEntry *biosdrv_mmap_init() {
 	bios_regs.ebx = 0;
 	bios_regs.ecx = 24;
 	bios_regs.edx = 0x534D4150;
-	bios_call(0x15);
+	bios_call(0x15);	
+	biosdrv_ws_owner = BIOSDRV_MMAP_ID;
+
 
 	if (bios_regs.eax != 0x534D4150)
 		return nil;
@@ -27,6 +30,7 @@ BiosDrvMmapEntry *biosdrv_mmap_cont() {
 	bios_regs.eax = 0xE820;
 	bios_regs.ecx = 24;
 	bios_call(0x15);
+	biosdrv_ws_owner = BIOSDRV_MMAP_ID;
 
 	if (bios_regs.eax != 0x534D4150)
 		return nil;

@@ -1,4 +1,5 @@
 biosdrv_src = [
+	'biosdrv.c',
 	'disk.c',
 	'mmap.c'
 ]

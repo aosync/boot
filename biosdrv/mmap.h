@@ -6,6 +6,8 @@
 
 #include <bios/call.h>
 
+#define BIOSDRV_MMAP_ID 0x676C83E1F34B302E
+
 enum biosdrv_mmap_entry_type {
 	BIOSDRV_MMAP_USABLE = 1,
 	BIOSDRV_MMAP_RESERVED = 2,

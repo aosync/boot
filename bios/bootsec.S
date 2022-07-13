@@ -11,6 +11,46 @@ extern _stage1
 section .boot.bootsec
 global _boot
 _boot:
+	jmp _boot.skip_ebpb
+	times 3-($-$$) db 0x90
+
+; The EBPB is a structure that may sometimes
+; be required in order to properly boot
+_boot.ebpb:
+	; BPB
+	bpb_oem_name: db "bsfs.fmt"
+	bpb_sector:   dw 512
+	bpb_cluster:  db 1
+	bpb_rsvd_sec: dw 1
+	bpb_fats:     db 2
+	bpb_root_len: dw 224
+	bpb_sectors:  dw 2880
+	bpb_med_type: db 0xF0
+	bpb_sec_fat:  dw 9
+	bpb_spt:      dw 18
+	bpb_heads:    dw 2
+	bpb_hidden:   dd 0
+	bpb_sec_huge: dd 0
+
+	; FAT EBPB
+	times 64 - ($ - $$) db 0
+
+	; EBPB
+	bpb_drive_no: db 0
+	bpb_rsvd:     db 0
+	bpb_sign:     db 0x29
+	bpb_volid:    dd 0x2D7E5A1A
+	bpb_vollbl:   db "BOOTLOADER!"
+	bpb_fstype:   db "FAT32   "
+
+%if ($ - $$) != 90
+	%fatal "EBPB size is incorrect"
+%endif
+
+_boot.skip_ebpb:
+	; Some BIOS set cs to 0x7c, reset it to zero
+	jmp 0:_boot.segments
+_boot.segments:
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
@@ -26,6 +66,10 @@ _boot:
 	call drive_init
 
 	; Attempt to enable the A20 line
+	call a20_check
+	cmp ax, 1
+	je _boot.a20_ok
+
 	call a20_enable_bios
 	call a20_check
 	cmp ax, 1
@@ -42,12 +86,12 @@ _boot:
 	je _boot.a20_ok
 
 _boot.a20_fail:
-	mov esi, str.a20_error
-	call fatal
+	hlt
+	jmp _boot.a20_fail
 
 _boot.a20_ok:
 _boot.ld_stage1:
-	mov edi, dword [mbr.entry0.lb]
+	mov edi, 1
 	mov esi, bios_boot_stage1
 _boot.ld_stage1.loop0b:
 	cmp esi, bios_boot_end
@@ -62,27 +106,13 @@ _boot.ld_stage1.loop0b:
 _boot.ld_stage1.loop0e:
 	jmp _stage1
 
-%include "bootsec.a20.S"
-%include "bootsec.drive.S"
-%include "bootsec.log.S"
 %include "bootsec.info.S"
+%include "bootsec.drive.S"
+%include "bootsec.a20.S"
 
 %if ($ - $$) > 446
 	%fatal "Bootstrap code is too large"
 %endif
-
-times 446 - ($ - $$) db 0
-mbr.entry0:
-mbr.entry0.attr: db 0x80
-mbr.entry0.cs: 	 db 0x0
-mbr.entry0.hs:   db 0x0
-mbr.entry0.ss:   db 0x0
-mbr.entry0.type: db 0x0
-mbr.entry0.cl:   db 0x0
-mbr.entry0.hl:   db 0x0
-mbr.entry0.sl:   db 0x0
-mbr.entry0.lb:   dd 1
-mbr.entry0.len:  dd 512
 
 times 510 - ($ - $$) db 0
 db 0x55, 0xAA

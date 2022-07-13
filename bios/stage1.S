@@ -1,4 +1,5 @@
 %include "stage1.bioscall.S"
+
 [bits 16]
 
 ; Pages
@@ -11,7 +12,6 @@ extern bios_p1
 extern bios_quirks
 
 %include "stage1.gdt.S"
-; %include "stage1.bioscall.S"
 
 section .boot.stage1
 

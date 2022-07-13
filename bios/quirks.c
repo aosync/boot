@@ -11,6 +11,8 @@
 #include <text/text.h>
 #include <io/io.h>
 
+#include <fmt/fmt.h>
+
 #define BIOS_LIMIT ((void*)0x80000000)
 #define BIOS_EBDA (*((volatile u16*)0x413) * 1024)
 
@@ -18,6 +20,9 @@ int boot();
 
 // Performs the early initialization quirks 
 void bios_quirks() {
+	// Initialize the biosdrv disk
+	biosdrv_disk_init();
+
 	// Install a framer in the upper workspace
 	MemFramer *prim = mem_framer_install(&bios_upper_workspace, (void*)0x80000, 4096);
 	

@@ -11,6 +11,8 @@ ssize_t io_pread(IoFile *file, void *buf, size_t n, off_t off);
 ssize_t io_write(IoFile *file, void *buf, size_t n);
 ssize_t io_read(IoFile *file, void *buf, size_t n);
 
+int io_walk(IoFile *file, IoFile *dst, char *name);
+
 extern IoFile *io_stdout;
 
 #endif

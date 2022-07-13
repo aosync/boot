@@ -1,0 +1,2 @@
+The [[bs]] module contains facilities making up for a read-only
+driver for the bsfs filesystem.

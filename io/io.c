@@ -37,3 +37,10 @@ ssize_t io_pread(IoFile *file, void *buf, size_t n, off_t off) {
 
 	return file->read(file, buf, n, off);
 }
+
+int io_walk(IoFile *file, IoFile *dst, char *name) {
+	if (file->walk == nil)
+		return 1;
+	
+	return file->walk(file, dst, name);
+}

@@ -7,7 +7,8 @@
 #include <text/text.h>
 #include <part/mbr.h>
 
-#include "part.h"
+#include <bs/bs.h>
+#include <bios/linker.h>
 
 char *mmap_entry_type_name(u32 type) {
 	switch (type) {
@@ -37,19 +38,32 @@ char *mmap_entry_type_name(u32 type) {
 }
 
 int boot() {
-	MemMmapEntry *entry = (MemMmapEntry*)sys->mmap->first;
+	/*MemMmapEntry *entry = (MemMmapEntry*)sys->mmap->first;
 	while (entry) {
 		printf("%09p %09p %s\n", (u64)entry->begin, (u64)entry->end, mmap_entry_type_name(entry->type));
 
 		entry = (MemMmapEntry*)entry->next;
-	}
+	}*/
 
-	PartFile pf;
-	IoFile *part = (IoFile*)&pf;
+	Bs bs;
+	if (!bs_init(&bs, sys->disk))
+		printf("bsfs successfully initted\n");
 
-	if (!find_boot_part(&pf)) {
-		printf("No bootable partition found.");
-		return 1;
+	bs.ws = &bios_lower_workspace;
+
+	BsFile root;
+	bs_root(&bs, &root);
+
+	BsFile boot;
+	io_walk((IoFile*)&root, (IoFile*)&boot, "boot.c");
+	
+	printf("reading from %s:\n\n", "boot.c");
+
+	char c[129];
+	ssize_t count;
+	while ((count = io_read((IoFile*)&boot, &c, 128)) > 0) {
+		c[count] = '\0';
+		printf("%s", c);
 	}
 
 	return 0;

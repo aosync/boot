@@ -16,8 +16,7 @@ as      = generator(
 
 # Boot sources
 boot_src = [
-    'boot.c',
-    'part.c'
+    'boot.c'
 ]
 boot_mod = []
 boot_inc = [include_directories('.')]
@@ -28,6 +27,7 @@ boot_link_dep = []
 subdir('rt')
 subdir('bios')
 subdir('biosdrv')
+subdir('bs')
 subdir('fmt')
 subdir('io')
 subdir('mem')
@@ -47,5 +47,13 @@ boot_bin = custom_target('boot.bin',
         '-I', 'elf64-x86-64', '-O', 'binary',
         '--binary-architecture=i386:x86-64',
         '@INPUT@', '@OUTPUT@'],
+    install : true,
+    install_dir : 'subdir')
+
+boot_fs = custom_target('boot.fs',
+    output : 'boot.fs',
+    input : boot_bin,
+    command : ['C:\\Users\\aws\\bsfs\\bld\\bsfs.exe',
+        '@OUTPUT@', 'format', '::@INPUT@'],
     install : true,
     install_dir : 'subdir')

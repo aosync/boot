@@ -86,8 +86,7 @@ _boot.segments:
 	je _boot.a20_ok
 
 _boot.a20_fail:
-	hlt
-	jmp _boot.a20_fail
+	jmp $
 
 _boot.a20_ok:
 _boot.ld_stage1:

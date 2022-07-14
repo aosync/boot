@@ -74,6 +74,10 @@ ssize_t text_write(IoFile *file, void *buf, size_t n, off_t off) {
 			text->x = 0;
 			text_advance_row(text);
 			break;
+		case '\t':
+			for (int i = 0; i < 8; i++)
+				text_advance_col(text);
+			break;
 		default:
 			text_putchar(text, src[i]);
 			text_advance_col(text);

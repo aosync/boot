@@ -2,6 +2,7 @@
 #include "errors.h"
 
 #include <str/str.h>
+#include <io/errors.h>
 
 #define BLKSZ(X) (1 << (X))
 
@@ -31,12 +32,16 @@ int bs_init(Bs *self, IoFile *file) {
 
 int bs_inode_fetch(Bs *self, BsInode *inode, u64 inid) {
 	u64 inaddr = inid << 6;
-	return io_pread(self->file, inode, sizeof(BsInode), inaddr) != sizeof(BsInode);
+	
+	if (io_pread(self->file, inode, sizeof(BsInode), inaddr) != sizeof(BsInode))
+		return BS_IO_ERROR;
+	
+	return BS_OK;
 }
 
 int bs_get_file(Bs *self, BsFile *dst, u64 inid) {
 	if (inid == 0)
-		return 1;
+		return BS_INVAL;
 	
 	*dst = (BsFile) {
 		.file = (IoFile) {
@@ -50,10 +55,10 @@ int bs_get_file(Bs *self, BsFile *dst, u64 inid) {
 	};
 
 	if (bs_inode_fetch(self, &dst->inner.inode, inid))
-		return 1;
+		return BS_IO_ERROR;
 
 	if (dst->inner.inode.rsvd == 0)
-		return 2;
+		return BS_FREE_INODE;
 
 	dst->inner.map = (BsMap) {
 		.file = self->file,
@@ -63,12 +68,12 @@ int bs_get_file(Bs *self, BsFile *dst, u64 inid) {
 	};
 	bs_map_clear(&dst->inner.map);
 
-	return 0;
+	return BS_OK;
 }
 
 int bs_root(Bs *self, BsFile *dst) {
 	if (self->rootin == 0)
-		return 1;
+		return BS_NO_ROOT;
 	
 	return bs_get_file(self, dst, self->rootin);
 }
@@ -90,7 +95,7 @@ ssize_t bs_file_read(IoFile *file, void *buf, size_t n, off_t off) {
 	while (count < n) {
 		u64 addr = bs_map_translate(&inner->map, count + off);
 		if (addr == 0)
-			return -1;
+			return -IO_UNMAPPED;
 		
 		addr -= addr % 4096;
 
@@ -112,22 +117,25 @@ int bs_file_walk(IoFile *file, IoFile *dst, char *name) {
 
 	// Error if not a directory
 	if (!(inner->inode.attr & 1))
-		return 1;
+		return IO_NOT_DIR;
 	
 	BsDirhead dhead;
 	file->pos = 0;
 	if (io_read(file, &dhead, sizeof(BsDirhead)) != sizeof(BsDirhead))
-		return 2;
+		return IO_TRUNCATED;
 
 	BsDirent dent;
 	for (size_t i = 1; i < dhead.next; i++) {
-		if (io_read(file, &dent, sizeof(BsDirent)) != sizeof(BsDirent)) {
-			return 3;
-		}
+		if (io_read(file, &dent, sizeof(BsDirent)) != sizeof(BsDirent))
+			return IO_TRUNCATED;
 		
-		if (strcmp(name, dent.name) == 0)
-			return bs_get_file(inner->bs, (BsFile*)dst, dent.inid);
+		if (strcmp(name, dent.name) == 0) {
+			if (bs_get_file(inner->bs, (BsFile*)dst, dent.inid))
+				return IO_RETRIEVAL;
+			else
+				return IO_OK;
+		}
 	}
 
-	return 4;
+	return IO_NOT_FOUND;
 }

@@ -9,6 +9,7 @@
 
 #include <bs/bs.h>
 #include <bios/linker.h>
+#include <ini/ini.h>
 
 char *mmap_entry_type_name(u32 type) {
 	switch (type) {
@@ -55,16 +56,20 @@ int boot() {
 	bs_root(&bs, &root);
 
 	BsFile boot;
-	io_walk((IoFile*)&root, (IoFile*)&boot, "boot.c");
+	io_walk((IoFile*)&root, (IoFile*)&boot, "boot.ini");
 	
-	printf("reading from %s:\n\n", "boot.c");
+	printf("reading from %s:\n\n", "boot.ini");
 
-	char c[129];
-	ssize_t count;
-	while ((count = io_read((IoFile*)&boot, &c, 128)) > 0) {
-		c[count] = '\0';
-		printf("%s", c);
-	}
+	char *key = "kernel";
+	char val[128];
+	Ini ini;
+	ini_init(&ini, (IoFile*)&boot);
+	int i = ini_get(&ini, key, val);
+	
+	if (!i)
+		printf("%s\n", val);
+	else
+		printf("key not found\n");
 
 	return 0;
 }

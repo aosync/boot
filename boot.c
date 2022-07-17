@@ -52,11 +52,8 @@ void *boot_vmalloc(Vmap *vmap, u64 virt, size_t n, MemFramer *prim, MemMmapBlk *
 			continue;
 		
 		u64 phys = (u64)mem_framer_alloc(prim, 4096);
-		printf("not marking\n");
-		if (mmap) {
+		if (mmap)
 			mem_mmap_mark(mmap, phys, phys + 4096, type, 0);
-			printf("marking\n");
-		}
 		vmap_map(vmap, (u64)virt + count, phys, 4096);
 	}
 
@@ -71,7 +68,7 @@ int boot() {
 	if (!bs_init(&bs, sys->disk))
 		printf("bsfs successfully initted\n");
 
-	bs.ws = &bios_lower_workspace;
+	bs.ws = mem_framer_alloc(sys->prim, 4096);
 
 	BsFile root;
 	bs_root(&bs, &root);

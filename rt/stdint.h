@@ -1,7 +1,7 @@
 #ifndef STDINT_H
 #define STDINT_H
 
-#include <assert.h>
+#include "assert.h"
 
 // Normal types
 typedef unsigned char uchar;

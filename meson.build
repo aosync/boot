@@ -28,6 +28,7 @@ subdir('rt')
 subdir('bios')
 subdir('biosdrv')
 subdir('bs')
+subdir('elf')
 subdir('fmt')
 subdir('ini')
 subdir('io')
@@ -36,6 +37,10 @@ subdir('part')
 subdir('str')
 subdir('sys')
 subdir('text')
+subdir('vmap')
+
+# Test kernel module
+subdir('kernel')
 
 # Create the elf
 boot = executable('boot', boot_src, link_with: boot_mod, include_directories: boot_inc, link_args: boot_link_arg, link_depends: boot_link_dep)

@@ -1,0 +1,2 @@
+The [[vmap]] module provides an abstraction over the
+paging system of the x86_64 architecture.

@@ -45,28 +45,25 @@ int bs_get_file(Bs *self, BsFile *dst, u64 inid) {
 	
 	*dst = (BsFile) {
 		.file = (IoFile) {
-			.inner = &dst->inner,
 			.read = bs_file_read,
 			.walk = bs_file_walk
 		},
-		.inner = (BsFileInner) {
-			.bs = self
-		},
+		.bs = self
 	};
 
-	if (bs_inode_fetch(self, &dst->inner.inode, inid))
+	if (bs_inode_fetch(self, &dst->inode, inid))
 		return BS_IO_ERROR;
 
-	if (dst->inner.inode.rsvd == 0)
+	if (dst->inode.rsvd == 0)
 		return BS_FREE_INODE;
 
-	dst->inner.map = (BsMap) {
+	dst->map = (BsMap) {
 		.file = self->file,
 		.blksz = self->blksz,
-		.level = dst->inner.inode.level,
-		.base = dst->inner.inode.blk
+		.level = dst->inode.level,
+		.base = dst->inode.blk
 	};
-	bs_map_clear(&dst->inner.map);
+	bs_map_clear(&dst->map);
 
 	return BS_OK;
 }
@@ -79,7 +76,7 @@ int bs_root(Bs *self, BsFile *dst) {
 }
 
 ssize_t bs_file_read(IoFile *file, void *buf, size_t n, off_t off) {
-	BsFileInner *inner = file->inner;
+	BsFile *inner = (BsFile*)file;
 	u16 size = BLKSZ(inner->bs->blksz);
 
 	if (off > inner->inode.size)
@@ -113,7 +110,7 @@ ssize_t bs_file_read(IoFile *file, void *buf, size_t n, off_t off) {
 }
 
 int bs_file_walk(IoFile *file, IoFile *dst, char *name) {
-	BsFileInner *inner = file->inner;
+	BsFile *inner = (BsFile*)file;
 
 	// Error if not a directory
 	if (!(inner->inode.attr & 1))

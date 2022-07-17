@@ -4,6 +4,7 @@
 #include <io/file.h>
 
 struct text_text {
+	IoFile file;
 	u16 *fb;
 	uint x, xlen;
 	uint y, ylen;

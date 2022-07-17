@@ -11,7 +11,6 @@ typedef ssize_t (*IoReader)(IoFile*, void*, size_t, off_t);
 typedef int (*IoWalker)(IoFile*, IoFile*, char*);
 
 struct io_file {
-	void *inner;
 	IoWriter write;
 	IoReader read;
 	IoWalker walk;

@@ -5,19 +5,16 @@
 void part_file_init(PartFile *self, IoFile *parent, u64 begin, u64 end) {
 	*self = (PartFile) {
 		.file = {
-			.inner = &self->inner,
 			.read = part_file_read
 		},
-		.inner = {
-			.parent = parent,
-			.begin = begin,
-			.end = end
-		}
+		.parent = parent,
+		.begin = begin,
+		.end = end
 	};
 }
 
 ssize_t part_file_read(IoFile *self, void *buf, size_t n, off_t off) {
-	PartFileInner *inner = (PartFileInner*)self->inner;
+	PartFile *inner = (PartFile*)self;
 
 	if (inner->begin + off + n >= inner->end)
 		return -1;

@@ -83,19 +83,16 @@ void bios_quirks() {
 	Text text;
 	text_init(&text, (void*)0xB8000, 80, 25);
 	text_clear(&text);
-	IoFile cons = (IoFile) {
-		.inner = &text,
-		.write = text_write
-	};
+	IoFile *cons = (IoFile*)&text.file;
 
-	io_stdout = &cons;
+	io_stdout = cons;
 
 	Sys s = (Sys) {
 		.prim = prim,
 		.bulk = bulk,
 		.mmap = blk,
 		.disk = &disk,
-		.cons = &cons,
+		.cons = cons,
 	};
 
 	sys = &s;

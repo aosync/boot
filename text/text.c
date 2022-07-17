@@ -4,6 +4,9 @@
 
 void text_init(Text *self, u16 *fb, uint xlen, uint ylen) {
 	*self = (Text) {
+		.file = {
+			.write = text_write,
+		},
 		.fb = fb,
 		.xlen = xlen,
 		.ylen = ylen,
@@ -62,8 +65,8 @@ void text_putchar(Text *self, char c) {
 }
 
 ssize_t text_write(IoFile *file, void *buf, size_t n, off_t off) {
+	Text *text = (Text*)file;
 	u8 *src = buf;
-	Text *text = file->inner;
 
 	for (size_t i = 0; i < n; i++) {
 		switch (src[i]) {

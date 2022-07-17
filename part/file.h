@@ -4,16 +4,11 @@
 #include <stdint.h>
 #include <io/file.h>
 
-struct part_file_inner {
+struct part_file {
+	IoFile file;
 	IoFile *parent;
 	u64 begin;
 	u64 end;
-};
-typedef struct part_file_inner PartFileInner;
-
-struct part_file {
-	IoFile file;
-	PartFileInner inner;
 };
 typedef struct part_file PartFile;
 

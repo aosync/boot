@@ -71,16 +71,11 @@ struct bs_bs {
 };
 typedef struct bs_bs Bs;
 
-struct bs_file_inner {
+struct bs_file {
+	IoFile file;
 	Bs *bs;
 	BsInode inode;
 	BsMap map;
-};
-typedef struct bs_file_inner BsFileInner;
-
-struct bs_file {
-	IoFile file;
-	BsFileInner inner;
 };
 typedef struct bs_file BsFile;
 

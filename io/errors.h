@@ -5,7 +5,7 @@ enum io_error {
 	IO_OK = 0,
 
 	// File read is unexpectedly truncated while reading
-	// a structude
+	// a structure
 	IO_TRUNCATED,
 
 	// File is not mapped at offset

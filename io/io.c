@@ -1,6 +1,7 @@
 #include "io.h"
 
 #include <stddef.h>
+#include <str/str.h>
 
 IoFile *io_stdout = nil;
 
@@ -43,4 +44,24 @@ int io_walk(IoFile *file, IoFile *dst, char *name) {
 		return 1;
 	
 	return file->walk(file, dst, name);
+}
+
+int io_ballad(IoFile *file, char *name) {
+	char *tok;
+	int iter = 0;
+	int rc = 0;
+
+	while ((tok = str_split(name, '/', &iter))) {
+		if (!tok[0])
+			continue;
+
+		if (io_walk(file, file, tok)) {
+			rc = 1;
+			break;
+		}
+	}
+
+	while (str_split(name, '/', &iter));
+
+	return rc;
 }

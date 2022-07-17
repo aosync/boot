@@ -71,17 +71,43 @@ int boot() {
 	bs.ws = mem_framer_alloc(sys->prim, 4096);
 
 	BsFile root;
-	bs_root(&bs, &root);
+	if (bs_root(&bs, &root)) {
+		printf("Filesystem has no root!\n");
+		return 1;
+	}
 
 	BsFile boot;
-	io_walk((IoFile*)&root, (IoFile*)&boot, "kernel");
+	if (io_walk((IoFile*)&root, (IoFile*)&boot, "boot")) {
+		printf("Filesystem has no /boot directory!\n");
+		return 1;
+	}
+
+	BsFile boot_ini;
+	if (io_walk((IoFile*)&boot, (IoFile*)&boot_ini, "boot.ini")) {
+		printf("Filesystem has no /boot/boot.ini!\n");
+		return 1;
+	}
+
+	Ini ini;
+	ini_init(&ini, (IoFile*)&boot_ini);
+	char kpath[257];
+	if (ini_get(&ini, "kernel", kpath)) {
+		printf("boot.ini does not specify a kernel file\n");
+		return 1;
+	}
+
+	printf("Loading %s...\n", kpath);
+
+	BsFile kernel;
+	memcpy(&kernel, &root, sizeof(BsFile));
+	if (io_ballad((IoFile*)&kernel, kpath)) {
+		printf("Could not walk to %s\n", kpath);
+		return 1;
+	}
 
 	Elf elf;
-	int rc = elf_init(&elf, (IoFile*)&boot);
-	if (!rc)
-		printf("elf found!\n");
-	else {
-		printf("elf not found\n");
+	if (elf_init(&elf, (IoFile*)&kernel)) {
+		printf("Kernel file is not an ELF executable!\n");
 		return 1;
 	}
 
@@ -91,7 +117,7 @@ int boot() {
 			continue;
 
 		boot_vmalloc(&vmap, phent.vaddr, phent.memsz, sys->bulk, sys->mmap, MEM_MMAP_KERNEL);
-		io_pread((IoFile*)&boot, (void*)phent.vaddr, phent.filesz, phent.offset);
+		io_pread((IoFile*)&kernel, (void*)phent.vaddr, phent.filesz, phent.offset);
 
 		printf("phent[%lu].vaddr = %#lx\n", i, phent.vaddr);
 	}
@@ -104,7 +130,7 @@ int boot() {
 	void (*kboot)(BpBootinfo*) = (void*)elf.header.entry;
 	kboot(&bootinfo);
 
-	printf("kernel aborted\n");
+	printf("Kernel returned to bootloader\n");
 
 	return 0;
 }

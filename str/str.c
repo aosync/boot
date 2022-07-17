@@ -1,5 +1,29 @@
 #include "str.h"
 
+#include <stddef.h>
+
+char *str_split(char *s, char c, int *a) {
+	if (*a < 0) {
+		*a = 0;
+		return nil;
+	} else if (!s[*a]) {
+		s[*a] = c;
+		(*a)++;
+	}
+
+	int init = *a;
+
+	for (; s[*a] && s[*a] != c; (*a)++);
+
+	if (s[*a] == c) {
+		s[*a] = '\0';
+		return s + init;
+	}
+
+	*a = -1;
+	return s + init;
+}
+
 // Calculates the length of the string
 size_t strlen(const char *s) {
 	size_t len = 0;

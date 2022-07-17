@@ -1,5 +1,7 @@
 project('boot', 'c')
 
+fs = import('fs')
+
 # Program definitions
 nasm    = find_program('nasm')
 objcopy = find_program('llvm-objcopy')
@@ -56,10 +58,41 @@ boot_bin = custom_target('boot.bin',
     install : true,
     install_dir : 'subdir')
 
+# NOTE: anything after this line is messy
+# XXX fix this
+
+subdir('scripts')
+
+embed_files = [
+    meson.current_source_dir() / 'boot.ini'
+]
+
+embed_tgt = [
+    kernel
+]
+
+mkboot_cmd = [
+    mkboot,
+    'C:\\Users\\aws\\bsfs\\bld\\bsfs.exe',
+    '@OUTPUT@',
+    '@INPUT@',
+]
+
+foreach e : embed_files
+    mkboot_cmd += e
+    mkboot_cmd += fs.name(e)
+endforeach
+
+foreach e : embed_tgt
+    mkboot_cmd += e.full_path()
+    mkboot_cmd += fs.name(e.full_path())
+endforeach
+
 boot_fs = custom_target('boot.fs',
     output : 'boot.fs',
     input : boot_bin,
-    command : ['C:\\Users\\aws\\bsfs\\bld\\bsfs.exe',
-        '@OUTPUT@', 'format', '::@INPUT@'],
-    install : true,
+    command : mkboot_cmd,
+    depend_files : embed_files,
+    depends : [mkboot, embed_tgt],
+    install  : true,
     install_dir : 'subdir')

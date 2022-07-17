@@ -12,5 +12,7 @@ int boot(BpBootinfo *req) {
 	fb[4] = 'E' | 0xD << 8;
 	fb[5] = 'L' | 0xD << 8;
 
+	fb[6] = '!' | 0xD << 8;
+
 	return 0;
 }

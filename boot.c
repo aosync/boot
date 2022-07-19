@@ -5,7 +5,6 @@
 #include <mem/mmap.h>
 #include <fmt/fmt.h>
 #include <text/text.h>
-#include <part/mbr.h>
 
 #include <bs/bs.h>
 #include <bios/linker.h>

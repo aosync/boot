@@ -35,7 +35,6 @@ subdir('fmt')
 subdir('ini')
 subdir('io')
 subdir('mem')
-subdir('part')
 subdir('str')
 subdir('sys')
 subdir('text')
@@ -62,6 +61,9 @@ boot_bin = custom_target('boot.bin',
 # XXX fix this
 
 subdir('scripts')
+bsfs_proj = subproject('bsfs')
+bsfs = bsfs_proj.get_variable('bsfs')
+
 
 embed_files = [
     meson.current_source_dir() / 'boot.ini'
@@ -73,7 +75,7 @@ embed_tgt = [
 
 mkboot_cmd = [
     mkboot,
-    'C:\\Users\\aws\\bsfs\\bld\\bsfs.exe',
+    bsfs,
     '@OUTPUT@',
     '@INPUT@',
 ]
@@ -93,6 +95,6 @@ boot_fs = custom_target('boot.fs',
     input : boot_bin,
     command : mkboot_cmd,
     depend_files : embed_files,
-    depends : [mkboot, embed_tgt],
+    depends : [mkboot, bsfs, embed_tgt],
     install  : true,
     install_dir : 'subdir')

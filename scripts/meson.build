@@ -1,1 +1,0 @@
-mkboot = executable('mkboot', 'mkboot.c', native: true)

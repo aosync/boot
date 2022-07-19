@@ -40,9 +40,6 @@ subdir('sys')
 subdir('text')
 subdir('vmap')
 
-# Test kernel module
-subdir('kernel')
-
 # Create the elf
 boot = executable('boot', boot_src, link_with: boot_mod, include_directories: boot_inc, link_args: boot_link_arg, link_depends: boot_link_dep)
 
@@ -55,46 +52,4 @@ boot_bin = custom_target('boot.bin',
         '--binary-architecture=i386:x86-64',
         '@INPUT@', '@OUTPUT@'],
     install : true,
-    install_dir : 'subdir')
-
-# NOTE: anything after this line is messy
-# XXX fix this
-
-subdir('scripts')
-bsfs_proj = subproject('bsfs')
-bsfs = bsfs_proj.get_variable('bsfs')
-
-
-embed_files = [
-    meson.current_source_dir() / 'boot.ini'
-]
-
-embed_tgt = [
-    kernel
-]
-
-mkboot_cmd = [
-    mkboot,
-    bsfs,
-    '@OUTPUT@',
-    '@INPUT@',
-]
-
-foreach e : embed_files
-    mkboot_cmd += e
-    mkboot_cmd += fs.name(e)
-endforeach
-
-foreach e : embed_tgt
-    mkboot_cmd += e.full_path()
-    mkboot_cmd += fs.name(e.full_path())
-endforeach
-
-boot_fs = custom_target('boot.fs',
-    output : 'boot.fs',
-    input : boot_bin,
-    command : mkboot_cmd,
-    depend_files : embed_files,
-    depends : [mkboot, bsfs, embed_tgt],
-    install  : true,
     install_dir : 'subdir')

@@ -1,2 +1,2 @@
-The [[elf]] module contains structure and function
+The [elf] module contains structure and function
 definitions to parse and load 64 bits ELF files.

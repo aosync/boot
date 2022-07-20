@@ -17,31 +17,27 @@ SECTIONS {
 	bios_lower_workspace = .;
 
 	. = 0x7c00;
-	
 	bios_stack_top = .;
 
 	.boot : {
-		KEEP (*(.boot.bootsec))
-		*(.boot.bootsec)
+		KEEP(*(.boot.bootsec))
 
 		bios_boot_stage1 = .;
-		KEEP (*(.boot.stage1))
-		*(.boot.stage1)
+		KEEP(*(.boot.stage1))
 	}
+
 	.text : {
-	      KEEP (*(.text))
-	      *(.text.*)
+		KEEP(*(.text .text.*))
 	} :text
+
 	.data : {
-	      KEEP (*(.data))
-	      *(.data.*)
-	} :data
-	.bss : {
-	      KEEP (*(.bss))
-	      *(.bss.*)
+		KEEP(*(.data .data.*))
 	} :data
 
+	.bss (NOLOAD) : {
+		KEEP(*(COMMON))
+		KEEP(*(.bss .bss.*))
+	} :data
 	bios_boot_end = .;
-
 	bios_upper_workspace = .;
 }
